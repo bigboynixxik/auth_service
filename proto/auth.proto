@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "pkg/api/auth/v1";
+
+// Сервис аутентификации и авторизации пользователей
+service AuthService {
+  // Регистрация нового пользователя
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  // Вход по email и паролю
+  rpc Login(LoginRequest) returns (LoginResponse);
+  //Получение информации о пользователе
+  rpc GetUsersInfo(GetUsersInfoRequest) returns (GetUsersInfoResponse);
+}
+
+// Информация об юзере
+message UserInfo {
+  string id = 1;
+  string name = 2;
+  string login = 3;
+}
+
+// Запрос на получение информации о пользователе
+message GetUsersInfoRequest {
+  // Массив ID
+  repeated string user_ids = 1;
+}
+
+// Ответ на запрос на получение информации о пользователе
+message GetUsersInfoResponse {
+  // Возвращаем map, где ключ - user_id.
+  map<string, UserInfo> users = 1;
+}
+
+// Запрос на регистрацию пользователя
+message RegisterRequest {
+  string email = 1;
+  string login = 2;
+  string name = 3;
+  string password = 4;
+}
+
+// Ответ на регистрацию пользователя
+message RegisterResponse {
+  // JWT-токен
+  string access_token = 1;
+}
+
+// Авторизация пользователя по почте
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+// Ответ авторизацию пользователя
+message LoginResponse {
+  // JWT-токен
+  string access_token = 1;
+}
