@@ -3,14 +3,18 @@ package config
 import (
 	"fmt"
 
+	"github.com/caarlos0/env/v11"
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	HTTPPort        string `env:"HTTP_PORT" envDefault:"8080"`
-	AppEnv          string `env:"APP_ENV" envDefault:"dev"`
-	AuthServiceAddr string `env:"AUTH_SERVICE_ADDR" envDefault:":50052"`
-	JWTSecret       string `env:"JWT_SECRET"`
+	AppEnv    string `env:"APP_ENV" envDefault:"dev"`
+	GRPCPort  string `env:"GRPC_PORT" envDefault:":50052"`
+	JWTSecret string `env:"JWT_SECRET"`
+	PGUser    string `env:"POSTGRES_USER" envDefault:"postgres"`
+	PGPass    string `env:"POSTGRES_PASSWORD" envDefault:"postgres"`
+	PGDb      string `env:"POSTGRES_DB" envDefault:"auth_db"`
+	PGDSN     string `env:"PG_DSN"`
 }
 
 func LoadConfig(path string) (*Config, error) {
