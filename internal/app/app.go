@@ -89,10 +89,11 @@ func NewApp(ctx context.Context) (*App, error) {
 	})
 
 	return &App{
-		grpcPort: cfg.GRPCPort,
-		logs:     logs,
-		closer:   cl,
-		pool:     pool,
+		grpcPort:   cfg.GRPCPort,
+		logs:       logs,
+		closer:     cl,
+		pool:       pool,
+		grpcServer: server,
 	}, nil
 }
 
