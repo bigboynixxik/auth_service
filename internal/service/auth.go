@@ -20,6 +20,10 @@ type AuthService struct {
 	jwtSecret []byte
 }
 
+func NewAuthService(repo AuthRepository, jwtSecret []byte) *AuthService {
+	return &AuthService{repo: repo, jwtSecret: jwtSecret}
+}
+
 func (as *AuthService) Register(ctx context.Context, email, login, name, password string) (string, error) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
