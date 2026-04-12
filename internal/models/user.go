@@ -1,19 +1,22 @@
 package models
 
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
+
 type UserInfo struct {
-	ID    string
+	ID    uuid.UUID
 	Name  string
 	Login string
 }
 
-type UserLogin struct {
+type User struct {
+	ID           uuid.UUID
+	Name         string
 	Email        string
+	Login        string
 	PasswordHash string
-}
-
-type UserReg struct {
-	Email    string
-	Login    string
-	Name     string
-	Password string
+	CreatedAt    time.Time
 }
