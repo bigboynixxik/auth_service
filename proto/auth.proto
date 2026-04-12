@@ -62,5 +62,5 @@ message LoginResponse {
 }
 
 message GetUserInfoByLoginRequest {
-  string login = 1
+  string login = 1;
 }
