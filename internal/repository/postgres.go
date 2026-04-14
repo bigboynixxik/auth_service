@@ -55,6 +55,7 @@ func (r *AuthRepo) CreateUser(ctx context.Context, user *models.User) (uuid.UUID
 func (r *AuthRepo) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 	query, args, err := r.sq.
 		Select("id", "name", "login", "password_hash", "created_at").
+		From("users").
 		Where(sq.Eq{"email": email}).
 		ToSql()
 	if err != nil {
@@ -75,6 +76,7 @@ func (r *AuthRepo) GetUserByEmail(ctx context.Context, email string) (*models.Us
 func (r *AuthRepo) GetUserByLogin(ctx context.Context, login string) (*models.User, error) {
 	query, args, err := r.sq.
 		Select("id", "name", "email", "password_hash", "created_at").
+		From("users").
 		Where(sq.Eq{"login": login}).
 		ToSql()
 	if err != nil {

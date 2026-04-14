@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS users
 CREATE INDEX idx_users_email ON users (email);
 CREATE INDEX idx_users_login ON users (login);
 
+
+-- +goose StatementBegin
 CREATE OR REPLACE FUNCTION trigger_set_updated_at()
     RETURNS TRIGGER AS
 $$
@@ -21,6 +23,7 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+-- +goose StatementEnd
 
 CREATE TRIGGER set_updated_at_users
     BEFORE UPDATE
@@ -44,6 +47,8 @@ CREATE INDEX idx_sessions_token ON user_sessions (refresh_token);
 
 -- +goose Down
 DROP TRIGGER IF EXISTS set_updated_at_users ON users;
+-- +goose StatementBegin
 DROP FUNCTION IF EXISTS trigger_set_updated_at;
+-- +goose StatementEnd
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS user_sessions;

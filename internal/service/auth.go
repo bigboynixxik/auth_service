@@ -25,11 +25,12 @@ func NewAuthService(repo AuthRepository, jwtSecret []byte) *AuthService {
 }
 
 func (as *AuthService) Register(ctx context.Context, email, login, name, password string) (string, error) {
-	// TODO: Добавить проверку на длину пароля
+	// TODO: Добавить проверку на длину пароля и его валидность
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return "", fmt.Errorf("service.Register failed to generate password hash: %w", err)
 	}
+	// TODO: Добавить проверку на валидность email
 	user := &models.User{
 		Email:        email,
 		Login:        login,
