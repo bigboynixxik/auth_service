@@ -18,6 +18,7 @@ service AuthService {
   rpc GenerateTgLink(GenerateTgLinkRequest) returns (GenerateTgLinkResponse);
   // Привязать chat_id из телеграма к юзеру
   rpc BindTelegram(BindTelegramRequest) returns (BindTelegramResponse);
+  rpc GetUserChatID(GetUserChatIDRequest) returns (GetUserChatIDResponse);
 }
 
 // Информация об юзере
@@ -86,4 +87,12 @@ message BindTelegramRequest {
 
 message BindTelegramResponse {
   bool success = 1;
+}
+
+message GetUserChatIDRequest {
+  string user_id = 1;
+}
+
+message GetUserChatIDResponse {
+  int64 chat_id = 1;
 }
