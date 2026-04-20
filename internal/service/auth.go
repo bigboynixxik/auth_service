@@ -134,3 +134,14 @@ func (as *AuthService) BindTgUser(ctx context.Context, token string, chatID int6
 	}
 	return nil
 }
+
+func (as *AuthService) GetUserChatID(ctx context.Context, userID uuid.UUID) (int64, error) {
+	chatID, err := as.repo.GetUserChatID(ctx, userID)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return 0, repository.ErrNotFound
+		}
+		return 0, fmt.Errorf("service.GetUserChatID failed to get user chatID: %w", err)
+	}
+	return chatID, nil
+}

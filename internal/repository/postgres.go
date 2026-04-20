@@ -176,3 +176,22 @@ func (r *AuthRepo) BindTgUser(ctx context.Context, token string, chatID int64) e
 	}
 	return nil
 }
+
+func (r *AuthRepo) GetUserChatID(ctx context.Context, userID uuid.UUID) (int64, error) {
+	query, args, err := r.sq.Select("tg_chat_id").
+		From("users").
+		Where(sq.Eq{"id": userID}).
+		ToSql()
+	if err != nil {
+		return 0, fmt.Errorf("AuthRepo.GetUserChatID: %w", err)
+	}
+	var chatID int64
+	err = r.db.QueryRow(ctx, query, args...).Scan(&chatID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return 0, ErrNotFound
+		}
+		return 0, fmt.Errorf("AuthRepo.GetUserChatID: %w", err)
+	}
+	return chatID, nil
+}

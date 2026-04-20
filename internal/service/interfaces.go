@@ -14,4 +14,5 @@ type AuthRepository interface {
 	GetUsersByIDs(ctx context.Context, ids []string) ([]*models.User, error)
 	SaveTgToken(ctx context.Context, userID string) (string, error)
 	BindTgUser(ctx context.Context, token string, chatID int64) error
+	GetUserChatID(ctx context.Context, userID uuid.UUID) (int64, error)
 }

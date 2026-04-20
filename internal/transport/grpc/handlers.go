@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -104,5 +105,24 @@ func (h *AuthHandler) BindTelegram(ctx context.Context, request *api.BindTelegra
 	}
 	return &api.BindTelegramResponse{
 		Success: true,
+	}, nil
+}
+
+func (h *AuthHandler) GetUserChatID(ctx context.Context, request *api.GetUserChatIDRequest) (*api.GetUserChatIDResponse, error) {
+	userID := request.UserId
+	userIDUUID, err := uuid.Parse(userID)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "grpc.GetUserChatID %v", err)
+	}
+
+	chatID, err := h.as.GetUserChatID(ctx, userIDUUID)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return nil, status.Errorf(codes.NotFound, "grpc.GetUserChatID %v", err)
+		}
+		return nil, status.Errorf(codes.Internal, "grpc.GetUserChatID %v", err)
+	}
+	return &api.GetUserChatIDResponse{
+		ChatId: chatID,
 	}, nil
 }
