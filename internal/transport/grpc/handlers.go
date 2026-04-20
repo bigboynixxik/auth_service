@@ -82,3 +82,27 @@ func (h *AuthHandler) GetUserInfoByLogin(ctx context.Context, request *api.GetUs
 		Login: user.Login,
 	}, nil
 }
+
+func (h *AuthHandler) GenerateTgLink(ctx context.Context, request *api.GenerateTgLinkRequest) (*api.GenerateTgLinkResponse, error) {
+	token, err := h.as.SaveTgToken(ctx, request.GetUserId())
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return nil, status.Errorf(codes.NotFound, "grpc.GenerateTgLink %v", err)
+		}
+		return nil, status.Errorf(codes.Internal, "grpc.GenerateTgLink %v", err)
+	}
+	return &api.GenerateTgLinkResponse{Token: token}, nil
+}
+
+func (h *AuthHandler) BindTelegram(ctx context.Context, request *api.BindTelegramRequest) (*api.BindTelegramResponse, error) {
+	err := h.as.BindTgUser(ctx, request.GetToken(), request.GetChatId())
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return nil, status.Errorf(codes.NotFound, "grpc.BindTelegram %v", err)
+		}
+		return nil, status.Errorf(codes.Internal, "grpc.BindTelegram %v", err)
+	}
+	return &api.BindTelegramResponse{
+		Success: true,
+	}, nil
+}

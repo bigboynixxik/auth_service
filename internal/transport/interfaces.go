@@ -10,4 +10,6 @@ type AuthService interface {
 	Login(ctx context.Context, email, password string) (string, error)
 	GetUserInfoByLogin(ctx context.Context, login string) (*models.UserInfo, error)
 	GetUsersInfo(ctx context.Context, userIDs []string) (map[string]*models.UserInfo, error)
+	SaveTgToken(ctx context.Context, userID string) (string, error)
+	BindTgUser(ctx context.Context, token string, chatID int64) error
 }

@@ -115,3 +115,22 @@ func (as *AuthService) generateToken(userID uuid.UUID) (string, error) {
 	}
 	return tokenString, nil
 }
+
+func (as *AuthService) SaveTgToken(ctx context.Context, userID string) (string, error) {
+	token, err := as.repo.SaveTgToken(ctx, userID)
+	if err != nil {
+		return "", fmt.Errorf("service.SaveTgToken failed to save token: %w", err)
+	}
+	return token, nil
+}
+
+func (as *AuthService) BindTgUser(ctx context.Context, token string, chatID int64) error {
+	err := as.repo.BindTgUser(ctx, token, chatID)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return repository.ErrNotFound
+		}
+		return fmt.Errorf("service.BindTgUser failed to bind user: %w", err)
+	}
+	return nil
+}

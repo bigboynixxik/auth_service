@@ -120,3 +120,59 @@ func (r *AuthRepo) GetUsersByIDs(ctx context.Context, ids []string) ([]*models.U
 	return users, nil
 
 }
+
+func (r *AuthRepo) SaveTgToken(ctx context.Context, userID string) (string, error) {
+	query, args, err := r.sq.
+		Insert("tg_links").
+		Columns("user_id").
+		Values(userID).
+		Suffix("RETURNING token").
+		ToSql()
+	if err != nil {
+		return "", fmt.Errorf("AuthRepo.SaveTgToken: %w", err)
+	}
+	var token string
+	err = r.db.QueryRow(ctx, query, args...).Scan(&token)
+	if err != nil {
+		return "", fmt.Errorf("AuthRepo.SaveTgToken: %w", err)
+	}
+	return token, nil
+}
+
+func (r *AuthRepo) BindTgUser(ctx context.Context, token string, chatID int64) error {
+	tx, err := r.db.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("AuthRepo.BindTgUser: %w", err)
+	}
+	defer tx.Rollback(ctx)
+	query, args, err := r.sq.
+		Delete("tg_links").
+		Where(sq.Eq{"token": token}).
+		Suffix("RETURNING user_id").
+		ToSql()
+	if err != nil {
+		return fmt.Errorf("AuthRepo.BindTgUser: %w", err)
+	}
+	var userID uuid.UUID
+	err = tx.QueryRow(ctx, query, args...).Scan(&userID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrNotFound
+		}
+		return fmt.Errorf("AuthRepo.BindTgUser: %w", err)
+	}
+
+	query, args, err = r.sq.Update("users").Set("tg_chat_id", chatID).Where(sq.Eq{"id": userID}).ToSql()
+	if err != nil {
+		return fmt.Errorf("AuthRepo.BindTgUser: %w", err)
+	}
+	_, err = tx.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("AuthRepo.BindTgUser: %w", err)
+	}
+	err = tx.Commit(ctx)
+	if err != nil {
+		return fmt.Errorf("AuthRepo.BindTgUser: %w", err)
+	}
+	return nil
+}
